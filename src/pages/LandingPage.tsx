@@ -1,8 +1,15 @@
 import { motion } from "framer-motion";
 import backgroundImage from "@/assets/bg.png";
-import { FaBox, FaShoppingCart, FaChartLine } from "react-icons/fa";
+import {
+  FaBox,
+  FaShoppingCart,
+  FaChartLine,
+  FaFileInvoice,
+} from "react-icons/fa";
 import { SignInForm } from "./LoginPage";
 import ScrambleText from "@/components/myui/ScrambleText";
+import { TbTransactionDollar } from "react-icons/tb";
+import { RiSteering2Fill } from "react-icons/ri";
 
 export default function LandingPage() {
   return (
@@ -55,7 +62,7 @@ export default function LandingPage() {
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.2 }}
             className="p-3 lg:p-6 bg-white shadow-lg rounded-xl text-center flex flex-col items-center"
           >
@@ -98,5 +105,20 @@ const features = [
     title: "Analytics & Reports",
     description: "Track sales, stock levels, and profits.",
     icon: FaChartLine,
+  },
+  {
+    title: "Automated Invoice Generation",
+    description: "Generate invoices automatically for every sale.",
+    icon: FaFileInvoice,
+  },
+  {
+    title: "Installment Records",
+    description: "Manage customer installments and payments effortlessly.",
+    icon: TbTransactionDollar,
+  },
+  {
+    title: "Easy To Use",
+    description: "User-friendly interface for all your needs.",
+    icon: RiSteering2Fill,
   },
 ];
