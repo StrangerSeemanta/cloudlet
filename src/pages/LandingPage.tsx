@@ -32,11 +32,31 @@ export default function LandingPage() {
           transition={{ duration: 1, delay: 0.5 }}
           className="bg-black/60  w-full h-full absolute top-0 left-0  flex flex-col items-center justify-center text-center text-white"
         >
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 10,
+              delay: 1,
+            }}
+            className="absolute right-20 top-6  border-amber-400 border-2 hover:bg-amber-400 hover:text-black text-white text-lg font-Nunito font-semibold py-2 px-6 rounded-full shadow-lg cursor-pointer"
+            onClick={() => {
+              document
+                .getElementById("landing_login")
+                ?.scrollIntoView({ behavior: "smooth" });
+            }}
+          >
+            <ScrambleText shuffleTime={50} cyclesPerLetter={1}>
+              Get Started
+            </ScrambleText>
+          </motion.div>
           <motion.h1
             initial={{ opacity: 0, letterSpacing: "0.5rem" }}
-            whileInView={{ opacity: 1, letterSpacing: "0rem" }}
+            whileInView={{ opacity: 1, letterSpacing: "0.1rem" }}
             transition={{ duration: 1 }}
-            className="md:text-6xl lg:text-8xl font-bold text-yellow-400"
+            className="md:text-6xl lg:text-8xl font-bold text-yellow-400 "
           >
             Cloudlet
           </motion.h1>
@@ -78,7 +98,10 @@ export default function LandingPage() {
       </section>
 
       {/* Sign-in Section  */}
-      <section className="relative w-full  flex justify-center md:mt-12 z-10">
+      <section
+        id="landing_login"
+        className="relative w-full  flex justify-center md:mt-12 z-10"
+      >
         <SignInForm />
       </section>
 
