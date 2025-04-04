@@ -1,42 +1,52 @@
 import { motion } from "framer-motion";
-import backgroundImage from "../assets/sacred_bg_1.jpg";
+import backgroundImage from "@/assets/bg.png";
 import { FaBox, FaShoppingCart, FaChartLine } from "react-icons/fa";
 import { SignInForm } from "./LoginPage";
+import ScrambleText from "@/components/myui/ScrambleText";
 
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen flex flex-col items-center bg-gray-200">
       {/* Hero Section with Fixed Background */}
       <motion.section
-        initial={{ filter: "saturate(0)" }}
-        animate={{ filter: "saturate(2)" }}
+        initial={{ filter: "saturate(0)", backdropFilter: "blur(20px)" }}
+        animate={{ filter: "saturate(2)", backdropFilter: "blur(0px)" }}
         transition={{ duration: 1, delay: 1 }}
         className="relative w-full h-[80vh] bg-cover bg-center hidden md:block"
         style={{
           backgroundImage: `url(${backgroundImage})`,
           backgroundAttachment: "fixed",
-          backgroundSize: "cover",
+          backgroundSize: "contain",
         }}
       >
-        <div className="bg-black/40 w-full h-full absolute top-0 left-0  flex flex-col items-center justify-center text-center text-white">
+        <motion.div
+          initial={{ backdropFilter: "blur(20px)" }}
+          animate={{ backdropFilter: "blur(3px)" }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="bg-black/60  w-full h-full absolute top-0 left-0  flex flex-col items-center justify-center text-center text-white"
+        >
           <motion.h1
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, letterSpacing: "0.5rem" }}
+            whileInView={{ opacity: 1, letterSpacing: "0rem" }}
             transition={{ duration: 1 }}
-            className="md:text-6xl lg:text-8xl font-bold"
+            className="md:text-6xl lg:text-8xl font-bold text-yellow-400"
           >
             Cloudlet
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.3 }}
-            className="text-xl lg:text-2xl mt-2"
+          <motion.div
+            initial={{ opacity: 0, filter: "blur(10px)" }}
+            whileInView={{ opacity: 1, filter: "blur(0px)" }}
+            transition={{
+              duration: 0.5,
+              delay: 0.5,
+            }}
+            className="text-xl lg:text-2xl mt-2 "
           >
-            A cloud-based application for managing your outlet efficiently with
-            our smart tools
-          </motion.p>
-        </div>
+            {
+              "A cloud-based application for managing your outlet efficiently with our smart tools"
+            }
+          </motion.div>
+        </motion.div>
       </motion.section>
 
       {/* Features Cards */}
@@ -50,9 +60,9 @@ export default function LandingPage() {
             className="p-3 lg:p-6 bg-white shadow-lg rounded-xl text-center flex flex-col items-center"
           >
             <feature.icon className="text-3xl lg:text-5xl text-blue-600 mb-4" />
-            <h3 className="text-lg lg:text-xl font-semibold mb-2">
-              {feature.title}
-            </h3>
+            <div className="text-lg lg:text-xl font-semibold mb-2">
+              <ScrambleText shuffleTime={40}>{feature.title}</ScrambleText>
+            </div>
             <p className="text-xs lg:text-lg text-gray-600">
               {feature.description}
             </p>
