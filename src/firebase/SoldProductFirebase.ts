@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 import { getformattedDate } from "@/utils/getDateByRange";
+import { handleActivity } from "./HandleActivityFirebase";
 
 export interface SoldProductDataType {
   productId: string;
@@ -40,6 +41,15 @@ export async function addSoldProductData(soldPoductData: SoldProductDataType) {
 
     const ref = doc(db, "soldProductData", docName);
     await setDoc(ref, soldPoductData);
+    await handleActivity({
+      type: "Sold Product",
+      description: `Sold ${soldPoductData.selling_quantity} ${soldPoductData.productName}(${soldPoductData.productId}) to ${soldPoductData.buyer_name}(${soldPoductData.buyer_phoneNo})`,
+      amount:
+        Number(soldPoductData.selling_price) *
+        Number(soldPoductData.selling_quantity),
+      date: soldPoductData.soldAt,
+      timestamp: soldPoductData.timestamp,
+    });
   } catch (error) {
     throw new Error(String(error));
   }
@@ -116,6 +126,13 @@ export async function repayAmount(data: RepayAmountDataType) {
         Number(data.received_amount) + Number(prevData[0].received_amount)
           ? "paid"
           : "pending",
+    });
+    await handleActivity({
+      type: "Repaid Pending",
+      description: `${data.buyer_name}(${data.buyer_phone}) repaid ${data.installment_history.amount} ${data.repay_productName}(${data.repay_productID})`,
+      amount: Number(data.installment_history.amount),
+      date: data.installment_history.repay_date,
+      timestamp: Date.now(),
     });
   } catch (error) {
     throw new Error("Failed To Repay: " + String(error));

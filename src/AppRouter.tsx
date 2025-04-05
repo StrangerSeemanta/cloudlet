@@ -16,14 +16,14 @@ import NoPage from "./components/myui/NoPage";
 import UploadProfilePage from "./components/myui/UploadProfilePage";
 import StockPage from "./pages/StockPage";
 import DailyExpense from "./pages/DailyExpense";
-import FinancePage from "./pages/FinancePage";
 import SellProductPage from "./pages/SellProductPage";
 import DynamicsSaleDetails from "./pages/DynamicsSaleDetails";
+import FinancialActivityPage from "./pages/FinancialActivity";
 const AuthenticatedRoutes = (
   <Route path="/" element={<DashboardLayout />}>
     <Route index element={<Dashboard />} />
     <Route path="dashboard" element={<Dashboard />} />
-    <Route path="finance" element={<FinancePage />} />
+    <Route path="finance" element={<FinancialActivityPage />} />
 
     <Route path="stock" element={<StockPage />} />
     <Route path="sell/:productId" element={<SellProductPage />} />

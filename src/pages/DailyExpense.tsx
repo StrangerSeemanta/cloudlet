@@ -190,7 +190,7 @@ export default function DailyExpense() {
                 onChange={handleInputChange}
                 className=" border-1 font-cursive font-Nunito min-h-24 border-gray-600/50"
                 placeholder="Write Your Note"
-                maxLength={200}
+                maxLength={500}
               />
               {error && <p className="text-red-500">{error}</p>}
 
@@ -265,10 +265,7 @@ export default function DailyExpense() {
               </TableHeader>
               <TableBody>
                 {filteredDailyExpenseData.map((expense, index) => (
-                  <TableRow
-                    key={index}
-                    className="border-b hover:bg-primary/10 cursor-pointer"
-                  >
+                  <TableRow key={index} className="border-b ">
                     <TableCell className="px-4 py-3 text-gray-800 dark:text-primary whitespace-break-spaces break-words">
                       {expense.expense_title}
                     </TableCell>
@@ -281,8 +278,22 @@ export default function DailyExpense() {
                     <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
                       {expense.spendBy}
                     </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-800 dark:text-primary break-words whitespace-break-spaces">
-                      {expense.comments}
+                    <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
+                      <details>
+                        <summary className="text-sm max-w-sm font-semibold text-gray-600 dark:text-primary cursor-pointer">
+                          {expense.comments.length > 30
+                            ? expense.comments.slice(0, 30)
+                            : expense.comments}
+                          {expense.comments.length > 30 && (
+                            <span className="italic text-xs">
+                              ...(show more)
+                            </span>
+                          )}
+                        </summary>
+                        <p className="text-xs max-w-xs text-gray-500 dark:text-primary whitespace-break-spaces break-words">
+                          {expense.comments}
+                        </p>
+                      </details>
                     </TableCell>
                   </TableRow>
                 ))}

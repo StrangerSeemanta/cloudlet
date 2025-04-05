@@ -27,6 +27,7 @@ import { Loader, Loader2 } from "lucide-react";
 import { getformattedDate } from "@/utils/getDateByRange";
 import { Button } from "@/components/ui/button";
 import generateInvoicePDF from "@/utils/generateInvoicePDF";
+import LoadingTitle from "@/components/myui/LoadingTitle";
 // Get the Sold Product Id From Url
 function DynamicsSaleDetails() {
   const { loadingUser, user } = useContext(AuthContext);
@@ -149,11 +150,7 @@ function DynamicsSaleDetails() {
     <Fragment>
       {pageLoading ? (
         <>
-          <div className="w-full h-[80vh] flex justify-center items-center">
-            <div className="p-3  border-gray-500 bg-zinc-300 font-Nunito">
-              Loading ...
-            </div>
-          </div>
+          <LoadingTitle />
         </>
       ) : soldProductData ? (
         <Fragment>
@@ -305,109 +302,107 @@ function DynamicsSaleDetails() {
                       {soldProductData.status === "paid" ? "paid" : "pending"}
                     </h1>
                   </div>
-                  {soldProductData.installment_history.length >= 1 && (
-                    <div className="mt-2 w-full grid grid-cols-2 space-x-5">
-                      {/* Show Repay History */}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <motion.div
-                            initial={{
-                              opacity: 0,
-                              scale: 0.8,
-                              letterSpacing: "0rem",
-                            }}
-                            whileInView={{
-                              opacity: 1,
-                              scale: 1,
-                              letterSpacing: "0rem",
-                            }}
-                            whileTap={{ letterSpacing: "0.2rem" }}
-                            transition={{
-                              type: "spring",
-                              stiffness: 200,
-                              damping: 10,
-                            }}
-                            // Smooth transition
-                            className="bg-green-800 flex cursor-pointer tracking-wide 
-                                   justify-center  
-                                   items-center text-md font-semibold text-white font-Nunito 
-                                   h-10"
-                          >
-                            <motion.span
-                              initial={{ opacity: 0, y: 40 }}
-                              whileInView={{ opacity: 1, y: 0 }}
-                              transition={{
-                                delay: 0.1,
-                                type: "spring",
-                                stiffness: 200,
-                              }}
-                            >
-                              Transaction History
-                            </motion.span>
-                          </motion.div>
-                        </DialogTrigger>
-                        <DialogContent className="overflow-auto max-h-screen">
-                          <DialogHeader className="text-xl font-bold">
-                            <DialogTitle>Transaction History</DialogTitle>
-                          </DialogHeader>
-                          <div className="font-Nunito">
-                            <h1>
-                              Total Amount:{" "}
-                              {soldProductData.total_sold.toString()} Taka
-                            </h1>{" "}
-                            <h1>
-                              Total Received Amount:{" "}
-                              {soldProductData.received_amount.toString()} Taka
-                            </h1>
-                            <h1 className="text-red-600">
-                              Total Pending Amount:{" "}
-                              {soldProductData.pending_amount.toString()} Taka
-                            </h1>
-                            <div>
-                              <h1 className="font-bold my-3 border-b-2 border-gray-500/50 border-dashed">
-                                Transactions
-                              </h1>
-                              {soldProductData.installment_history.length >=
-                              1 ? (
-                                soldProductData.installment_history.map(
-                                  (installment, index) => (
-                                    <div
-                                      key={
-                                        index.toString() +
-                                        installment.repay_date.toString()
-                                      }
-                                      className="border-b-2 border-gray-500/50 mb-4 border-dashed"
-                                    >
-                                      <h1 className="text-indigo-600 font-bold text-lg">
-                                        <span className="mr-2">
-                                          Installment:
-                                        </span>
-                                        <span>
-                                          {"#" + (index + 1).toString()}
-                                        </span>
-                                      </h1>
-                                      <h1 className="font-bold  mt-1">
-                                        Date:{" "}
-                                        {installment.repay_date.toString()}
-                                      </h1>
-                                      <h1 className="font-bold ">
-                                        Received:{" "}
-                                        {installment.amount.toString()} Taka
-                                      </h1>
-                                    </div>
-                                  )
-                                )
-                              ) : (
-                                <h1 className="font-bold text-gray-500">
-                                  No transaction
-                                </h1>
-                              )}
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
 
-                      {/* Repay Button */}
+                  <div className="mt-2 w-full flex space-x-5">
+                    {/* Show Repay History */}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <motion.div
+                          initial={{
+                            opacity: 0,
+                            scale: 0.8,
+                            letterSpacing: "0rem",
+                          }}
+                          whileInView={{
+                            opacity: 1,
+                            scale: 1,
+                            letterSpacing: "0rem",
+                          }}
+                          whileTap={{ letterSpacing: "0.2rem" }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 200,
+                            damping: 10,
+                          }}
+                          // Smooth transition
+                          className="bg-green-700 flex cursor-pointer tracking-wide 
+                                   justify-center  
+                                   items-center text-md font-semibold text-white font-Nunito 
+                                   h-10 mt-4 flex-1"
+                        >
+                          <motion.span
+                            initial={{ opacity: 0, y: 40 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{
+                              delay: 0.1,
+                              type: "spring",
+                              stiffness: 200,
+                            }}
+                          >
+                            Transaction History
+                          </motion.span>
+                        </motion.div>
+                      </DialogTrigger>
+                      <DialogContent className="overflow-auto max-h-screen">
+                        <DialogHeader className="text-xl font-bold">
+                          <DialogTitle>Transaction History</DialogTitle>
+                        </DialogHeader>
+                        <div className="font-Nunito">
+                          <h1>
+                            Total Amount:{" "}
+                            {soldProductData.total_sold.toString()} Taka
+                          </h1>{" "}
+                          <h1>
+                            Total Received Amount:{" "}
+                            {soldProductData.received_amount.toString()} Taka
+                          </h1>
+                          <h1 className="text-red-600">
+                            Total Pending Amount:{" "}
+                            {soldProductData.pending_amount.toString()} Taka
+                          </h1>
+                          <div>
+                            <h1 className="font-bold my-3 border-b-2 border-gray-500/50 border-dashed">
+                              Transactions
+                            </h1>
+                            {soldProductData.installment_history.length >= 1 ? (
+                              soldProductData.installment_history.map(
+                                (installment, index) => (
+                                  <div
+                                    key={
+                                      index.toString() +
+                                      installment.repay_date.toString()
+                                    }
+                                    className="border-b-2 border-gray-500/50 mb-4 border-dashed"
+                                  >
+                                    <h1 className="text-indigo-600 font-bold text-lg">
+                                      <span className="mr-2">Installment:</span>
+                                      <span>
+                                        {"#" + (index + 1).toString()}
+                                      </span>
+                                    </h1>
+                                    <h1 className="font-bold  mt-1">
+                                      Date: {installment.repay_date.toString()}
+                                    </h1>
+                                    <h1 className="font-bold ">
+                                      Received: {installment.amount.toString()}{" "}
+                                      Taka
+                                    </h1>
+                                  </div>
+                                )
+                              )
+                            ) : (
+                              <h1 className="font-bold text-gray-500">
+                                No transaction
+                              </h1>
+                            )}
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Repay Button */}
+                    {(soldProductData.status === "pending" ||
+                      Number(soldProductData.pending_amount) > 0) && (
                       <Dialog>
                         <DialogTrigger asChild>
                           <motion.div
@@ -428,10 +423,10 @@ function DynamicsSaleDetails() {
                               damping: 10,
                             }}
                             // Smooth transition
-                            className="bg-rose-800 flex cursor-pointer tracking-wide 
+                            className="bg-indigo-800 flex cursor-pointer tracking-wide 
                                    justify-center  
                                    items-center text-md font-semibold text-white font-Nunito 
-                                   w-full h-10"
+                                   w-full h-10 flex-1 mt-4"
                           >
                             <motion.span
                               initial={{ opacity: 0, y: 40 }}
@@ -550,8 +545,8 @@ function DynamicsSaleDetails() {
                           </div>
                         </DialogContent>
                       </Dialog>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

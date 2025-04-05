@@ -8,6 +8,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db } from "./firebase";
+import { handleActivity } from "./HandleActivityFirebase";
 export interface AddedProductTypes {
   productId: string;
   productName: string;
@@ -54,6 +55,13 @@ export async function addProduct(productData: AddedProductTypes) {
       );
     } else {
       await setDoc(referance, productData);
+      await handleActivity({
+        type: "Added Product",
+        description: `Added ${productData.quantity} ${productData.productName} with ID ${productData.productId}`,
+        amount: Number(productData.buyingPrice) * Number(productData.quantity),
+        date: productData.productAddedAt,
+        timestamp: productData.timestamp,
+      });
     }
   } catch (error) {
     throw new Error(String(error));

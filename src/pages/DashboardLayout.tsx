@@ -7,6 +7,7 @@ import {
   FaShoppingCart,
   FaWarehouse,
   FaTachometerAlt,
+  FaChartLine,
 } from "react-icons/fa";
 import { FaMoneyCheckDollar } from "react-icons/fa6";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -52,11 +53,11 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
         Icon: FaTachometerAlt,
         text: "Dashboard",
       },
-      // {
-      //   to: "finance",
-      //   Icon: FaChartLine,
-      //   text: "Financial Activity",
-      // },
+      {
+        to: "finance",
+        Icon: FaChartLine,
+        text: "Financial Activity",
+      },
       {
         to: "stock",
         Icon: FaWarehouse,
@@ -349,7 +350,7 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
           {/* Main Content */}
           <main
             className={twMerge(
-              "flex-1 p-2 md:p-4 overflow-y-scroll mt-16 transition-all duration-100",
+              "flex-1 p-2 md:p-4 overflow-y-auto mt-16 transition-all duration-100",
               isSidebarOpen ? "lg:ms-60" : "lg:ms-16"
             )}
           >

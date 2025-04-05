@@ -24,6 +24,7 @@ import {
 import { useParams } from "react-router-dom";
 import NoPage from "@/components/myui/NoPage";
 import { getStockProduct, StockProduct } from "@/firebase/StockFirebase";
+import LoadingTitle from "@/components/myui/LoadingTitle";
 function SellProductPage() {
   const { productId } = useParams();
   const { user, loadingUser } = useContext(AuthContext);
@@ -160,11 +161,7 @@ function SellProductPage() {
     <Fragment>
       <div className="p-2 space-y-6">
         {pageLoading ? (
-          <div className="w-full h-[80vh] flex justify-center items-center">
-            <div className="p-3  border-gray-500 bg-zinc-300 font-Nunito">
-              Loading ...
-            </div>
-          </div>
+          <LoadingTitle />
         ) : productData ? (
           <Fragment>
             <h1 className="text-2xl font-bold">Sell Product</h1>
@@ -312,7 +309,7 @@ function SellProductPage() {
                     )}
                     <Button
                       type="submit"
-                      className="w-full bg-teal-600  font-Nunito font-bold  hover:bg-teal-800"
+                      className="w-full bg-green-700  font-Nunito font-bold  hover:bg-green-600"
                     >
                       {isSelling ? (
                         <>

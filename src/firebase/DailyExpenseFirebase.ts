@@ -1,5 +1,6 @@
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
+import { handleActivity } from "./HandleActivityFirebase";
 
 export interface DailyExpenseType {
   expense_title: string;
@@ -17,6 +18,13 @@ export async function addDailyExpense(expenseData: DailyExpenseType) {
 
     const ref = doc(db, "dailyExpenseData", docName);
     await setDoc(ref, expenseData);
+    await handleActivity({
+      type: "additional expense",
+      description: `Spent ${expenseData.expense_amount} on ${expenseData.expense_title}`,
+      amount: Number(expenseData.expense_amount),
+      date: expenseData.expenseDate,
+      timestamp: Date.now(),
+    });
   } catch (error) {
     throw new Error(String(error));
   }
