@@ -12,13 +12,16 @@ import { getformattedDate } from "@/utils/getDateByRange";
 import { handleActivity } from "./HandleActivityFirebase";
 
 export interface SoldProductDataType {
-  productId: string;
-  productName: string;
   buyer_name: string;
   buyer_phoneNo: string;
   seller_name: string;
-  selling_quantity: number | string;
-  selling_price: number | string;
+  sold_products: {
+    productName: string;
+    productId: string;
+    selling_quantity: string | number;
+    selling_price: string | number;
+    total_price: string | number;
+  }[];
   total_sold: number | string;
   soldAt: Date | string;
   timestamp: number;
@@ -34,19 +37,14 @@ export interface SoldProductDataType {
 }
 export async function addSoldProductData(soldPoductData: SoldProductDataType) {
   try {
-    const docName =
-      soldPoductData.productId +
-      soldPoductData.productName.toLowerCase().trim().replace(" ", "_") +
-      String(soldPoductData.timestamp);
+    const docName = String(soldPoductData.timestamp);
 
     const ref = doc(db, "soldProductData", docName);
     await setDoc(ref, soldPoductData);
     await handleActivity({
       type: "Sold Product",
-      description: `Sold ${soldPoductData.selling_quantity} ${soldPoductData.productName}(${soldPoductData.productId}) to ${soldPoductData.buyer_name}(${soldPoductData.buyer_phoneNo})`,
-      amount:
-        Number(soldPoductData.selling_price) *
-        Number(soldPoductData.selling_quantity),
+      description: `Sold BDT ${soldPoductData.total_sold} Taka to ${soldPoductData.buyer_name}(${soldPoductData.buyer_phoneNo})`,
+      amount: Number(soldPoductData.total_sold),
       date: soldPoductData.soldAt,
       timestamp: soldPoductData.timestamp,
     });
@@ -71,8 +69,6 @@ export async function getAllSoldProductData() {
 }
 
 export interface RepayAmountDataType {
-  repay_productID: string;
-  repay_productName: string;
   buyer_name: string;
   buyer_phone: string;
   pending_amount: string | number;
@@ -87,12 +83,10 @@ export interface RepayAmountDataType {
 }
 export async function repayAmount(data: RepayAmountDataType) {
   try {
-    console.log(data);
     const collectionRef = collection(db, "soldProductData");
     const q = query(
       collectionRef,
-      where("productId", "==", data.repay_productID),
-      where("productName", "==", data.repay_productName),
+
       where("buyer_name", "==", data.buyer_name),
       where("buyer_phoneNo", "==", data.buyer_phone),
       where("timestamp", "==", data.timestamp)
@@ -129,7 +123,7 @@ export async function repayAmount(data: RepayAmountDataType) {
     });
     await handleActivity({
       type: "Repaid Pending",
-      description: `${data.buyer_name}(${data.buyer_phone}) repaid ${data.installment_history.amount} ${data.repay_productName}(${data.repay_productID})`,
+      description: `${data.buyer_name}(${data.buyer_phone}) repaid BDT ${data.installment_history.amount} Taka. Sale Id: ${data.timestamp}`,
       amount: Number(data.installment_history.amount),
       date: data.installment_history.repay_date,
       timestamp: Date.now(),

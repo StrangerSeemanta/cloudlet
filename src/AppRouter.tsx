@@ -26,7 +26,7 @@ const AuthenticatedRoutes = (
     <Route path="finance" element={<FinancialActivityPage />} />
 
     <Route path="stock" element={<StockPage />} />
-    <Route path="sell/:productId" element={<SellProductPage />} />
+    <Route path="sell" element={<SellProductPage />} />
 
     <Route path="sales" element={<SalePage />} />
     <Route

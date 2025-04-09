@@ -31,14 +31,10 @@ const generateInvoicePDF = (sale: SoldProductDataType) => {
   //   Product Details;
   doc.setFontSize(12);
 
-  doc.setTextColor("green");
-  doc.text(`Product Id: ${sale.productId.toUpperCase()}`, 14, 55);
-  doc.text(`Product Name: ${sale.productName.toUpperCase()}`, 14, 65);
-
   // Buyer Info Section
   doc.setTextColor("green");
-  doc.text(`Buyer Name: ${sale.buyer_name}`, 140, 55);
-  doc.text(`Buyer Phone: ${sale.buyer_phoneNo}`, 140, 65);
+  doc.text(`Buyer Name: ${sale.buyer_name}`, 14, 55);
+  doc.text(`Buyer Phone: ${sale.buyer_phoneNo}`, 14, 65);
 
   doc.setFont("helvetica", "normal");
   doc.setTextColor("black");
@@ -50,19 +46,17 @@ const generateInvoicePDF = (sale: SoldProductDataType) => {
     "Price",
     "Total",
   ];
-  const tableRows = [
-    [
-      sale.productId,
-      sale.productName,
-      sale.selling_quantity,
-      `${sale.selling_price} BDT`,
-      `${Number(sale.selling_quantity) * Number(sale.selling_price)} BDT`,
-    ],
-  ];
+  const rows = sale.sold_products.map((product) => [
+    product.productId,
+    product.productName,
+    product.selling_quantity,
+    `${product.selling_price} BDT`,
+    `${Number(product.selling_quantity) * Number(product.selling_price)} BDT`,
+  ]);
 
   autoTable(doc, {
     head: [tableColumn],
-    body: tableRows,
+    body: rows,
     startY: 80,
     theme: "grid", // Adds a border to table
     styles: { fontSize: 10, cellPadding: 4 },
@@ -70,7 +64,7 @@ const generateInvoicePDF = (sale: SoldProductDataType) => {
   });
 
   // Y Position After Table
-  const finalY = 60 + tableRows.length * 60 + 10; // Approximate table height
+  const finalY = 60 + rows.length * 10 + 55; // Approximate table height
 
   // Payment Summary
   doc.setFont("helvetica", "bold");
@@ -159,11 +153,7 @@ const generateInvoicePDF = (sale: SoldProductDataType) => {
         (i % 3) * 80 + 35
       );
       doc.setTextColor("black");
-      doc.text(
-        `Total Amount: ${sale.total_sold.toString()} Taka`,
-        14,
-        (i % 3) * 80 + 50
-      );
+
       doc.text(
         `Received Amount: ${installment.amount.toString()} Taka`,
         14,
@@ -173,9 +163,7 @@ const generateInvoicePDF = (sale: SoldProductDataType) => {
       doc.setTextColor("red");
 
       doc.text(
-        `Pending till this date: ${
-          Number(sale.total_sold) - Number(installment.amount)
-        } Taka`,
+        `Pending till this date: ${installment.remain} Taka`,
         14,
         (i % 3) * 80 + 70
       );

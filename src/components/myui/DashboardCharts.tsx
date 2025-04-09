@@ -26,6 +26,27 @@ function DashboardCharts({
     soldProducts: SoldProductDataType[] | null;
   };
 }) {
+  const totalQuantityPerDay = () => {
+    if (!data.soldProducts) return;
+    const quantityMap = new Map<string, number>();
+    if (data.soldProducts) {
+      data.soldProducts.forEach((soldProduct) => {
+        soldProduct.sold_products.forEach((sold) => {
+          const currentSoldQty =
+            quantityMap.get(soldProduct.soldAt.toString()) || 0;
+          quantityMap.set(
+            soldProduct.soldAt.toString(),
+            currentSoldQty + Number(sold.selling_quantity)
+          );
+        });
+      });
+
+      const ItemSoldPerDayData = Array.from(quantityMap).map((item) => {
+        return { soldAt: item[0], quantity: item[1] };
+      });
+      return ItemSoldPerDayData;
+    }
+  };
   return (
     <Fragment>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -66,12 +87,12 @@ function DashboardCharts({
             <h2 className="text-lg font-semibold">Items Sold Per Day</h2>
             {data.soldProducts ? (
               <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={data.soldProducts}>
+                <BarChart data={totalQuantityPerDay()}>
                   <XAxis dataKey="soldAt" />
                   <YAxis />
                   <Tooltip />
                   <Bar
-                    dataKey="selling_quantity"
+                    dataKey="quantity"
                     fill={
                       dateRange === "7 days"
                         ? "coral"

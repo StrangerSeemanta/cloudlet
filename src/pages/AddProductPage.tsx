@@ -10,9 +10,11 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { AlertDestructive } from "@/components/ui/AlertDestructive";
 import { getformattedDate } from "@/utils/getDateByRange";
+import { useNavigate } from "react-router-dom";
 
 function AddProductPage() {
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [isAdding, setAdding] = useState(false);
   const [errorMsg, setError] = useState("");
   const [formData, setFormData] = useState({
@@ -55,6 +57,7 @@ function AddProductPage() {
       .then(() => {
         toast("Successfully Product Added ");
         setAdding(false);
+        navigate("/products");
       })
       .catch((error) => {
         toast.error("Failed To Add The Product. Try Again", {

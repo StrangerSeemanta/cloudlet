@@ -57,7 +57,7 @@ export async function addProduct(productData: AddedProductTypes) {
       await setDoc(referance, productData);
       await handleActivity({
         type: "Added Product",
-        description: `Added ${productData.quantity} ${productData.productName} with ID ${productData.productId}`,
+        description: `Added ${productData.quantity} items of ${productData.productName} with Product ID: ${productData.productId}`,
         amount: Number(productData.buyingPrice) * Number(productData.quantity),
         date: productData.productAddedAt,
         timestamp: productData.timestamp,

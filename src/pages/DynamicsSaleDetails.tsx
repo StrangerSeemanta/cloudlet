@@ -28,6 +28,14 @@ import { getformattedDate } from "@/utils/getDateByRange";
 import { Button } from "@/components/ui/button";
 import generateInvoicePDF from "@/utils/generateInvoicePDF";
 import LoadingTitle from "@/components/myui/LoadingTitle";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 // Get the Sold Product Id From Url
 function DynamicsSaleDetails() {
   const { loadingUser, user } = useContext(AuthContext);
@@ -64,8 +72,15 @@ function DynamicsSaleDetails() {
         (product) => product.timestamp === pid
       );
 
-      if (soldProductData.length > 1)
-        throw new Error("This Product Id has Two Different Stock Data");
+      if (soldProductData.length === 0) {
+        setPageLoading(false);
+        return toast.error("No Product Found With This Id");
+      }
+      if (soldProductData.length > 1) {
+        setPageLoading(false);
+        return toast.error("Duplicate Product Found With This Id");
+      }
+      // Set The Sold Product Data
 
       setSoldProduct(soldProductData[0]);
       setPageLoading(false);
@@ -113,8 +128,6 @@ function DynamicsSaleDetails() {
       return toast.error("There Is No Pending Amount. ");
     setRepayLoading(true);
     const RepayData: RepayAmountDataType = {
-      repay_productID: repayFormData.repay_productID,
-      repay_productName: repayFormData.repay_productName,
       total_amount: repayFormData.total_amount,
       received_amount: repayFormData.received_amount,
       pending_amount: 0,
@@ -184,42 +197,6 @@ function DynamicsSaleDetails() {
               <CardContent className="space-y-5">
                 <div>
                   <h1 className="text-lg font-bold border-b-4 mb-2 border-gray-600/60 border-double">
-                    Product Details
-                  </h1>
-                  <div className="flex item-center space-x-4 ">
-                    <h1 className="text-md font-Roboto font-light">
-                      Product Id:
-                    </h1>
-                    <h1 className="text-md font-Nunito font-bold">
-                      {soldProductData.productId}
-                    </h1>
-                  </div>
-
-                  <div className="flex item-center space-x-4 ">
-                    <h1 className="text-md font-Roboto  font-light">
-                      Product Name:
-                    </h1>
-                    <h1 className="text-md font-Nunito capitalize font-bold">
-                      {soldProductData.productName}
-                    </h1>
-                  </div>
-                  <div className="flex item-center space-x-4 ">
-                    <h1 className="text-md font-Roboto  font-light">Date:</h1>
-                    <h1 className="text-md font-Nunito capitalize font-bold">
-                      {soldProductData.soldAt.toString()}
-                    </h1>
-                  </div>
-                  <div className="flex item-center space-x-4 ">
-                    <h1 className="text-md font-Roboto  font-light">
-                      Seller Name:
-                    </h1>
-                    <h1 className="text-md font-Nunito capitalize font-bold">
-                      {soldProductData.seller_name}
-                    </h1>
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold border-b-4 mb-2 border-gray-600/60 border-double">
                     Buyer Details
                   </h1>
                   <div className="flex item-center space-x-4 ">
@@ -239,29 +216,69 @@ function DynamicsSaleDetails() {
                       {soldProductData.buyer_phoneNo}
                     </h1>
                   </div>
-                </div>
 
-                <div>
-                  <h1 className="text-xl font-bold border-b-4 mb-2 border-gray-600/60 border-double">
-                    Shopping Details
-                  </h1>
                   <div className="flex item-center space-x-4 ">
-                    <h1 className="text-md font-Roboto font-light">
-                      Quantity:
-                    </h1>
-                    <h1 className="text-md font-Nunito font-bold">
-                      {soldProductData.selling_quantity}
+                    <h1 className="text-md font-Roboto  font-light">Date:</h1>
+                    <h1 className="text-md font-Nunito capitalize font-bold">
+                      {soldProductData.soldAt.toString()}
                     </h1>
                   </div>
 
                   <div className="flex item-center space-x-4 ">
                     <h1 className="text-md font-Roboto  font-light">
-                      Selling Price (Per Item):
+                      Seller Name:
                     </h1>
-                    <h1 className="text-md font-Nunito font-bold">
-                      {soldProductData.selling_price.toString() + " " + "Taka"}
+                    <h1 className="text-md font-Nunito capitalize font-bold">
+                      {soldProductData.seller_name}
                     </h1>
                   </div>
+                </div>
+
+                {/* Product Details */}
+                <div>
+                  <h1 className="text-lg font-bold border-b-4 mb-2 border-gray-600/60 border-double">
+                    Shopping Details
+                  </h1>
+                  <Table className="w-full border border-blue-200">
+                    <TableHeader className="bg-blue-500 hover:bg-blue-500  text-white">
+                      <TableRow className="hover:bg-blue-500 ">
+                        <TableHead className="text-white uppercase">
+                          Id
+                        </TableHead>
+                        <TableHead className="text-white uppercase">
+                          Name
+                        </TableHead>
+                        <TableHead className="text-white uppercase">
+                          Price
+                        </TableHead>
+                        <TableHead className="text-white uppercase">
+                          Quantity
+                        </TableHead>
+                        <TableHead className="text-white uppercase">
+                          Total
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {soldProductData.sold_products &&
+                        soldProductData.sold_products.map((product, index) => (
+                          <TableRow
+                            key={index.toString() + product.productId}
+                            className="border-b"
+                          >
+                            <TableCell>{product.productId}</TableCell>
+                            <TableCell>{product.productName}</TableCell>
+                            <TableCell>
+                              {product.selling_price + " Taka"}
+                            </TableCell>
+                            <TableCell>{product.selling_quantity}</TableCell>
+                            <TableCell>
+                              {product.total_price + " Taka"}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
                 </div>
 
                 <div>
@@ -451,26 +468,15 @@ function DynamicsSaleDetails() {
                               onSubmit={handleRepaySubmission}
                               className="space-y-3"
                             >
-                              <Label htmlFor="pending_productID">
-                                Product Id
-                              </Label>
+                              <Label htmlFor="buyer_name">Buyer Name</Label>
                               <Input
-                                id="pending_productID"
-                                name="pending_productID"
+                                id="buyer_name"
+                                name="buyer_name"
                                 readOnly
                                 disabled
-                                value={soldProductData.productId}
+                                value={soldProductData.buyer_name}
                               />
-                              <Label htmlFor="pending_productName">
-                                Product Name
-                              </Label>
-                              <Input
-                                id="pending_productName"
-                                name="pending_productName"
-                                readOnly
-                                disabled
-                                value={soldProductData.productName}
-                              />
+
                               <Label htmlFor="total_amount">
                                 Total Sold Amount
                               </Label>
@@ -516,9 +522,7 @@ function DynamicsSaleDetails() {
 
                                   setRepayFormData({
                                     ...repayFormData,
-                                    repay_productID: soldProductData.productId,
-                                    repay_productName:
-                                      soldProductData.productName,
+
                                     received_amount: e.target.value,
                                     buyer_name: soldProductData.buyer_name,
                                     buyer_phone: soldProductData.buyer_phoneNo,

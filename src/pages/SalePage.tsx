@@ -15,7 +15,6 @@ import {
 import { SoldProductDataType } from "@/firebase/SoldProductFirebase";
 import { toast } from "sonner";
 
-import Loading from "@/components/myui/Loading";
 import { twMerge } from "tailwind-merge";
 import FilterBar, { FiltersType } from "@/components/myui/FilterBar";
 
@@ -25,6 +24,7 @@ import { dateRangeType } from "@/components/myui/DateRangeSelector";
 import { getDataByRangeFirebase } from "@/firebase/getDataByRangeFirebase";
 
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SalePage() {
   const navigate = useNavigate();
@@ -73,8 +73,6 @@ export default function SalePage() {
     if (!soldProductData) return;
     const searchedResult = soldProductData.filter((value) => {
       if (
-        value.productId.toLowerCase().includes(search.toLowerCase()) ||
-        value.productName.toLowerCase().includes(search.toLowerCase()) ||
         value.buyer_name.toLowerCase().includes(search.toLowerCase()) ||
         value.buyer_phoneNo.toLowerCase().includes(search.toLowerCase())
       ) {
@@ -128,30 +126,27 @@ export default function SalePage() {
           />
           {loadingData ? (
             <div className="h-40">
-              <Loading />
+              <div className="px-3 py-4 space-y-4">
+                <Skeleton className="h-8 bg-gray-300 w-4/5 rounded-full" />
+                <Skeleton className="h-8 bg-gray-300 w-full rounded-full " />
+                <Skeleton className="h-8 bg-gray-300 w-2/3 rounded-full" />
+              </div>
             </div>
           ) : filteredSoldProductData && filteredSoldProductData.length >= 1 ? (
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
-                    Product ID
+                    Sale Id
                   </TableHead>
-                  <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
-                    Product Name
-                  </TableHead>
+
                   <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
                     Buyer Name
                   </TableHead>
                   <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
                     Buyer Number
                   </TableHead>
-                  <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
-                    Quantity
-                  </TableHead>
-                  <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
-                    Price
-                  </TableHead>
+
                   <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
                     Total
                   </TableHead>
@@ -183,25 +178,18 @@ export default function SalePage() {
                       )}
                     >
                       <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
-                        {sale.productId}
+                        {sale.timestamp.toString()}
                       </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
-                        {sale.productName}
-                      </TableCell>
+
                       <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
                         {sale.buyer_name}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-gray-800 text-sm dark:text-primary">
                         {sale.buyer_phoneNo}
                       </TableCell>
+
                       <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
-                        {sale.selling_quantity}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
-                        {sale.selling_price}
-                      </TableCell>
-                      <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
-                        {sale.total_sold}
+                        {sale.total_sold + " BDT"}
                       </TableCell>
                       <TableCell className="px-4 py-3 text-gray-800 dark:text-primary">
                         {String(sale.soldAt)}

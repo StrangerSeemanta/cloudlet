@@ -9,17 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Loading from "@/components/myui/Loading";
 import { getStockProduct, StockProduct } from "@/firebase/StockFirebase";
 import FilterBar from "@/components/myui/FilterBar";
 import { TbReload } from "react-icons/tb";
 import { twMerge } from "tailwind-merge";
 import { toast } from "sonner";
-
-import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const StockPage = () => {
-  const navigate = useNavigate();
   const [products, setProducts] = useState<StockProduct[] | null>(null);
 
   const [filteredProducts, setFilteredProducts] = useState<
@@ -91,8 +88,12 @@ const StockPage = () => {
             />
           </div>
           {loadingData ? (
-            <div className="h-60">
-              <Loading />
+            <div className="h-40">
+              <div className="px-3 py-2 space-y-4">
+                <Skeleton className="h-8 bg-gray-300 w-4/5 rounded-full" />
+                <Skeleton className="h-8 bg-gray-300 w-full rounded-full " />
+                <Skeleton className="h-8 bg-gray-300 w-2/3 rounded-full" />
+              </div>
             </div>
           ) : filteredProducts && filteredProducts.length >= 1 ? (
             <Table>
@@ -119,16 +120,8 @@ const StockPage = () => {
                 {filteredProducts.map((product, index) => (
                   <TableRow
                     key={index}
-                    onClick={() =>
-                      navigate(
-                        `/sell/${encodeURIComponent(
-                          product.productId.toUpperCase()
-                        )}`
-                      )
-                    }
-                    title="Click To Sell This Product"
                     className={twMerge(
-                      "border-b hover:contrast-80 cursor-pointer select-text",
+                      "border-b hover:contrast-80 select-text",
                       Number(product.currentStock) <= 0
                         ? "bg-red-300 pointer-events-none select-none"
                         : Number(product.currentStock) <= 5

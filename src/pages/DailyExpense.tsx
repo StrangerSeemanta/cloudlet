@@ -18,7 +18,6 @@ import { Loader2 } from "lucide-react";
 import { AuthContext } from "@/context/authContext";
 import { toast } from "sonner";
 
-import Loading from "@/components/myui/Loading";
 import { twMerge } from "tailwind-merge";
 import FilterBar, { FiltersType } from "@/components/myui/FilterBar";
 
@@ -31,6 +30,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { getDatesByRange, getformattedDate } from "@/utils/getDateByRange";
 import { dateRangeType } from "@/components/myui/DateRangeSelector";
 import { getDataByRangeFirebase } from "@/firebase/getDataByRangeFirebase";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DailyExpense() {
   const { user } = useContext(AuthContext);
@@ -227,7 +227,7 @@ export default function DailyExpense() {
           >
             <TbReload
               className={twMerge("size-6", loadingData && "animate-spin")}
-            />{" "}
+            />
           </Button>
         </CardHeader>
         <CardContent className="p-0 transition">
@@ -239,7 +239,11 @@ export default function DailyExpense() {
           />
           {loadingData ? (
             <div className="h-40">
-              <Loading />
+              <div className="px-3 py-2 space-y-4">
+                <Skeleton className="h-8 bg-gray-300 w-4/5 rounded-full" />
+                <Skeleton className="h-8 bg-gray-300 w-full rounded-full " />
+                <Skeleton className="h-8 bg-gray-300 w-2/3 rounded-full" />
+              </div>
             </div>
           ) : filteredDailyExpenseData &&
             filteredDailyExpenseData.length >= 1 ? (

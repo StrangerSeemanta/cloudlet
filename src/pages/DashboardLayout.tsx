@@ -8,6 +8,7 @@ import {
   FaWarehouse,
   FaTachometerAlt,
   FaChartLine,
+  FaDollarSign,
 } from "react-icons/fa";
 import { FaMoneyCheckDollar } from "react-icons/fa6";
 import { IoArrowBackSharp } from "react-icons/io5";
@@ -61,8 +62,14 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
       {
         to: "stock",
         Icon: FaWarehouse,
-        text: "Stock & Sell",
+        text: "Stock",
       },
+      {
+        to: "sell",
+        Icon: FaDollarSign,
+        text: "Sell Product",
+      },
+
       {
         to: "sales",
         Icon: FaShoppingCart,

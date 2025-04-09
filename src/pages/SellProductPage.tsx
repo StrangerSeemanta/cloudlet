@@ -2,7 +2,13 @@ import { Fragment } from "react/jsx-runtime";
 import { Card, CardContent } from "@/components/ui/card";
 
 import { Label } from "@/components/ui/label";
-
+import {
+  Table,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Select,
   SelectContent,
@@ -13,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { FormEvent, useCallback, useContext, useEffect, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 import { getformattedDate } from "@/utils/getDateByRange";
 import { AuthContext } from "@/context/authContext";
 import { toast } from "sonner";
@@ -21,56 +27,44 @@ import {
   addSoldProductData,
   SoldProductDataType,
 } from "@/firebase/SoldProductFirebase";
-import { useParams } from "react-router-dom";
 import NoPage from "@/components/myui/NoPage";
-import { getStockProduct, StockProduct } from "@/firebase/StockFirebase";
 import LoadingTitle from "@/components/myui/LoadingTitle";
+import SellProductRow from "@/components/myui/SellProductRow";
+import { useNavigate } from "react-router-dom";
+
 function SellProductPage() {
-  const { productId } = useParams();
   const { user, loadingUser } = useContext(AuthContext);
-  const [pageLoading, setPageLoading] = useState(true);
-  const [productData, setProductData] = useState<StockProduct | null>(null);
+  const navigate = useNavigate();
+  const [soldItems, setSoldItems] = useState<
+    {
+      productName: string;
+      productId: string;
+      selling_quantity: string | number;
+      selling_price: string | number;
+      total_price: string | number;
+    }[]
+  >([
+    {
+      productId: "",
+      productName: "",
+      selling_quantity: "",
+      selling_price: "",
+      total_price: "",
+    },
+  ]);
 
-  const fetchData = useCallback(async () => {
-    try {
-      if (!productId) return toast.error("No Param");
-      const pid = decodeURIComponent(productId.toUpperCase());
-
-      // Get All Stock Data
-      const allStockData = await getStockProduct();
-      if (!allStockData) return setProductData(null);
-      // Match The Id
-
-      const stockData = allStockData.filter(
-        (product) => product.productId.toUpperCase() === pid
-      );
-
-      if (stockData.length > 1)
-        throw new Error("This Product Id has Two Different Stock Data");
-
-      setProductData(stockData[0]);
-      setPageLoading(false);
-    } catch (error) {
-      toast.error("Try Again or Contact With The Developer", {
-        description: String(error),
-      });
-      setPageLoading(false);
-    }
-  }, [productId]);
-
+  const [total_sold_amount, setTotalSoldAmount] = useState<number>(0);
   useEffect(() => {
-    if (loadingUser) setPageLoading(true);
-
-    fetchData();
-  }, [loadingUser, fetchData]);
+    setTotalSoldAmount(
+      soldItems.map((item) => Number(item.total_price)).reduce((a, b) => a + b)
+    );
+  }, [soldItems]);
   const [isSelling, setSellingStat] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<"paid" | "pending" | null>(
     null
   );
   const [formData, setFormData] = useState({
     buyer_name: "",
-    selling_quantity: "",
-    selling_price: "",
     buyer_phoneNo: "",
     total_price: "",
     soldAt: "",
@@ -81,9 +75,7 @@ function SellProductPage() {
     setFormData({
       ...formData,
       [name]: value,
-      total_price: String(
-        Number(formData.selling_quantity) * Number(formData.selling_price)
-      ),
+      total_price: String(0),
       soldAt: getformattedDate(new Date()),
     });
   };
@@ -93,55 +85,37 @@ function SellProductPage() {
     if (!user || !user.displayName)
       return toast("You Need To Log In First! And Be Sure You Have A Name");
 
-    if (
-      !productData ||
-      !productId ||
-      !productData.productName ||
-      !formData.selling_quantity ||
-      !formData.selling_quantity ||
-      !formData.buyer_name ||
-      !formData.buyer_phoneNo ||
-      !paymentStatus
-    ) {
+    if (!formData.buyer_name || !formData.buyer_phoneNo || !paymentStatus) {
       return toast.error("All fields are required!");
     }
     setSellingStat(true);
+
     const ProductDATA: SoldProductDataType = {
-      productId: decodeURIComponent(productId.toUpperCase()),
-      productName: productData.productName.toLowerCase(),
       buyer_name: formData.buyer_name,
       buyer_phoneNo: formData.buyer_phoneNo,
-      selling_quantity: formData.selling_quantity,
-      selling_price: formData.selling_price,
-      total_sold:
-        Number(formData.selling_quantity) * Number(formData.selling_price),
+      sold_products: soldItems,
+      total_sold: total_sold_amount,
       soldAt: getformattedDate(new Date()),
       seller_name: user.displayName,
       timestamp: Date.now(),
       status: paymentStatus,
       pending_amount:
         paymentStatus === "pending"
-          ? Number(formData.selling_quantity) * Number(formData.selling_price) -
-            Number(formData.received_amount)
+          ? total_sold_amount - Number(formData.received_amount)
           : 0,
       received_amount:
-        paymentStatus === "paid"
-          ? Number(formData.selling_quantity) * Number(formData.selling_price)
-          : formData.received_amount,
+        paymentStatus === "paid" ? total_sold_amount : formData.received_amount,
       installment_history: [
         {
           repay_date: getformattedDate(new Date()),
           amount:
             paymentStatus === "paid"
-              ? Number(formData.selling_quantity) *
-                Number(formData.selling_price)
+              ? total_sold_amount
               : Number(formData.received_amount),
           remain:
             paymentStatus === "paid"
               ? 0
-              : Number(formData.selling_quantity) *
-                  Number(formData.selling_price) -
-                Number(formData.received_amount),
+              : total_sold_amount - Number(formData.received_amount),
         },
       ],
     };
@@ -149,6 +123,7 @@ function SellProductPage() {
       .then(() => {
         toast("Successfully Product Added ");
         setSellingStat(false);
+        navigate("/sales");
       })
       .catch((error) => {
         toast.error("Failed To Add The Product. Try Again", {
@@ -160,38 +135,15 @@ function SellProductPage() {
   return (
     <Fragment>
       <div className="p-2 space-y-6">
-        {pageLoading ? (
+        {loadingUser ? (
           <LoadingTitle />
-        ) : productData ? (
+        ) : user ? (
           <Fragment>
             <h1 className="text-2xl font-bold">Sell Product</h1>
             <Card>
               <CardContent className="p-6 space-y-4">
                 <form action="" onSubmit={handleProductSell}>
                   <div className="space-y-4">
-                    <Label htmlFor="productId">Product ID</Label>
-                    <Input
-                      required
-                      name="productId"
-                      id="productId"
-                      value={productId}
-                      readOnly
-                      className="transition uppercase  focus:ring-0 focus-visible:ring-0  font-Nunito"
-                      placeholder="Product Id"
-                    />
-
-                    <Label htmlFor="productName">Product Name</Label>
-                    <div className="flex items-center gap-5 transition">
-                      <Input
-                        required
-                        name="productName"
-                        id="productName"
-                        value={productData.productName}
-                        placeholder="Product Name"
-                        className="transition   focus:ring-0 focus-visible:ring-0 font-Nunito"
-                        readOnly
-                      />
-                    </div>
                     <Label htmlFor="buyer_name">Buyer Name</Label>
                     <Input
                       required
@@ -213,46 +165,72 @@ function SellProductPage() {
                       className=" border-1 border-gray-600/50 font-Nunito"
                       placeholder="Buyer Phone Number"
                     />
-                    <div className="gap-2  flex flex-col">
-                      <Label htmlFor="selling_quantity">Selling Quantity</Label>
-                      <Input
-                        required
-                        id="selling_quantity"
-                        name="selling_quantity"
-                        value={formData.selling_quantity}
-                        onChange={handleInputChange}
-                        placeholder="Selling Quantity"
-                        max={productData.currentStock}
-                        className=" border-1 border-gray-600/50 font-Nunito"
-                        type="number"
-                      />
-                      <h6 className="text-sm font-Nunito font-bold italic text-green-700 ">
-                        Available Stock: {productData.currentStock}
-                      </h6>
-                    </div>
-                    <Label htmlFor="selling_price">
-                      Selling Price / ( Per Item ){" "}
-                    </Label>
-                    <Input
-                      required
-                      id="selling_price"
-                      name="selling_price"
-                      value={formData.selling_price}
-                      onChange={handleInputChange}
-                      placeholder="Selling Price Per Item"
-                      className=" border-1 border-gray-600/50 font-Nunito"
-                      type="number"
-                    />
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className=" py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
+                            Product
+                          </TableHead>
+                          <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
+                            Product ID
+                          </TableHead>
+                          <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
+                            Product Name
+                          </TableHead>
+                          <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
+                            Quantity
+                          </TableHead>
+                          <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
+                            Price
+                          </TableHead>
+                          <TableHead className="px-4 py-2 text-left  text-gray-600 dark:text-destructive text-[0.9rem] font-bold capitalize">
+                            Total
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody>
+                        {soldItems.map((item, index) => (
+                          <SellProductRow
+                            key={index}
+                            productNo={index}
+                            item={item}
+                            onChange={(updatedItem) => {
+                              const updatedItems = [...soldItems];
+                              updatedItems[index] = updatedItem;
+                              setSoldItems(updatedItems);
+                            }}
+                          />
+                        ))}
+                      </TableBody>
+                    </Table>
+                    <Button
+                      onClick={() => {
+                        setSoldItems((prev) => [
+                          ...prev,
+                          {
+                            productId: "",
+                            productName: "",
+                            selling_quantity: "",
+                            selling_price: "",
+                            total_price: "",
+                          },
+                        ]);
+                        console.log(soldItems);
+                      }}
+                      type="button"
+                      size={"sm"}
+                      className="mt-2"
+                      variant={"themed"}
+                    >
+                      + Add Product
+                    </Button>
                     <Label htmlFor="total_sold">Total Price </Label>
                     <Input
                       required
                       name="total_sold"
                       id="total_sold"
-                      value={
-                        Number(formData.selling_price) *
-                          Number(formData.selling_quantity) +
-                        " Taka"
-                      }
+                      value={total_sold_amount + " Taka"}
                       placeholder="Total Price"
                       className="transition   focus:ring-0 focus-visible:ring-0  font-Nunito"
                       readOnly

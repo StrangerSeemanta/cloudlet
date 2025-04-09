@@ -1,8 +1,8 @@
 import { dateRangeType } from "@/components/myui/DateRangeSelector";
 import FilterBar, { FiltersType } from "@/components/myui/FilterBar";
-import Loading from "@/components/myui/Loading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -127,8 +127,12 @@ export default function ProductsPage() {
             />
           </div>
           {loadingData ? (
-            <div className="h-60">
-              <Loading />
+            <div className="h-40">
+              <div className="px-3 py-2 space-y-4">
+                <Skeleton className="h-8 bg-gray-300 w-4/5 rounded-full" />
+                <Skeleton className="h-8 bg-gray-300 w-full rounded-full " />
+                <Skeleton className="h-8 bg-gray-300 w-2/3 rounded-full" />
+              </div>
             </div>
           ) : filteredData && filteredData.length >= 1 ? (
             <Table>

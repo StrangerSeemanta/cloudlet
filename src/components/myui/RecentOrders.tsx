@@ -45,10 +45,7 @@ const RecentOrdersTable = ({
               <thead>
                 <tr className=" border-b">
                   <th className="px-4 py-2 text-left  text-gray-600 dark:text-destructive">
-                    Product
-                  </th>
-                  <th className="px-4 py-2 text-left  text-gray-600 dark:text-destructive">
-                    Quantity
+                    Sale ID
                   </th>
                   <th className="px-4 py-2 text-left  text-gray-600 dark:text-destructive">
                     Customer
@@ -68,10 +65,7 @@ const RecentOrdersTable = ({
                 {recentData.map((order, index) => (
                   <tr key={index} className="border-b hover:bg-primary/10">
                     <td className="px-4 py-3 text-sm text-gray-800 dark:text-primary">
-                      {order.productName}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-800 dark:text-primary">
-                      {order.selling_quantity}
+                      {order.timestamp}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-800 dark:text-primary">
                       {order.buyer_name}

@@ -47,12 +47,14 @@ export async function getStockProduct() {
     // Step 2: Calculate total sold quantity per productId
     const soldMap = new Map<string, number>();
     if (soldProducts) {
-      soldProducts.forEach((sold) => {
-        const currentSoldQty = soldMap.get(sold.productId) || 0;
-        soldMap.set(
-          sold.productId,
-          currentSoldQty + Number(sold.selling_quantity)
-        );
+      soldProducts.forEach((soldProduct) => {
+        soldProduct.sold_products.forEach((sold) => {
+          const currentSoldQty = soldMap.get(sold.productId) || 0;
+          soldMap.set(
+            sold.productId,
+            currentSoldQty + Number(sold.selling_quantity)
+          );
+        });
       });
     }
 
