@@ -10,9 +10,9 @@ export const getTotalIncomes = (
   if (!soldProducts || soldProducts.length <= 0) return 0;
   const soldProductMap = new Map<string, number>();
   soldProducts.forEach((sold) => {
-    const currentSold = soldProductMap.get(sold.productId) || 0;
+    const currentSold = soldProductMap.get(sold.timestamp.toString()) || 0;
     soldProductMap.set(
-      sold.productId,
+      sold.timestamp.toString(),
       currentSold +
         Number(
           sold.installment_history
@@ -32,9 +32,9 @@ export const getTotalPending = (
   if (!soldProducts || soldProducts.length <= 0) return 0;
   const pendingAmountMap = new Map<string, number>();
   soldProducts.forEach((sold) => {
-    const currentSold = pendingAmountMap.get(sold.productId) || 0;
+    const currentSold = pendingAmountMap.get(sold.timestamp.toString()) || 0;
     pendingAmountMap.set(
-      sold.productId,
+      sold.timestamp.toString(),
       currentSold + Number(sold.pending_amount)
     );
   });
