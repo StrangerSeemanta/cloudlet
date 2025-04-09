@@ -152,8 +152,11 @@ const FinancialActivityPage = () => {
                     <TableCell
                       className={twMerge(
                         "px-4 py-3 dark:text-primary whitespace-break-spaces break-words",
-                        item.type.toLowerCase() === "added product"
+                        item.type.toLowerCase() === "added product" ||
+                          item.type.toLowerCase() === "additional expense"
                           ? "text-red-500"
+                          : item.type.toLowerCase() === "repaid pending"
+                          ? "text-blue-500"
                           : "text-green-600"
                       )}
                     >
